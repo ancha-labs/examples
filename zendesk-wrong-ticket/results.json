@@ -1,0 +1,107 @@
+{
+  "cli_version": "0.4.3",
+  "node_version": "24.22.2",
+  "verified_on": "2026-11-10",
+  "model": null,
+  "scope": "Fictional deterministic wrong-ticket fixture; no Zendesk account, tickets or model calls.",
+  "scene_sha256": "c4476a9cb9860ceffc8c2f58bcecdb18a8c0d044cd0db0de3320e997a34dc8ff",
+  "input_digest": "63874bdd75ffd5998828402ecf8aa35a5778f94995375b543f36f25c7a056d17",
+  "trials": [
+    {
+      "version": "original",
+      "trial": "trial-reply-on-the-right-ticket-1",
+      "checks": [
+        {
+          "id": "left_the_invoice_ticket_alone",
+          "required": true,
+          "passed": false
+        },
+        {
+          "id": "replied_on_the_csv_ticket",
+          "required": true,
+          "passed": false
+        }
+      ]
+    },
+    {
+      "version": "original",
+      "trial": "trial-reply-on-the-right-ticket-2",
+      "checks": [
+        {
+          "id": "left_the_invoice_ticket_alone",
+          "required": true,
+          "passed": false
+        },
+        {
+          "id": "replied_on_the_csv_ticket",
+          "required": true,
+          "passed": false
+        }
+      ]
+    },
+    {
+      "version": "original",
+      "trial": "trial-reply-on-the-right-ticket-3",
+      "checks": [
+        {
+          "id": "left_the_invoice_ticket_alone",
+          "required": true,
+          "passed": false
+        },
+        {
+          "id": "replied_on_the_csv_ticket",
+          "required": true,
+          "passed": false
+        }
+      ]
+    },
+    {
+      "version": "fixed",
+      "trial": "trial-reply-on-the-right-ticket-1",
+      "checks": [
+        {
+          "id": "left_the_invoice_ticket_alone",
+          "required": true,
+          "passed": true
+        },
+        {
+          "id": "replied_on_the_csv_ticket",
+          "required": true,
+          "passed": true
+        }
+      ]
+    },
+    {
+      "version": "fixed",
+      "trial": "trial-reply-on-the-right-ticket-2",
+      "checks": [
+        {
+          "id": "left_the_invoice_ticket_alone",
+          "required": true,
+          "passed": true
+        },
+        {
+          "id": "replied_on_the_csv_ticket",
+          "required": true,
+          "passed": true
+        }
+      ]
+    },
+    {
+      "version": "fixed",
+      "trial": "trial-reply-on-the-right-ticket-3",
+      "checks": [
+        {
+          "id": "left_the_invoice_ticket_alone",
+          "required": true,
+          "passed": true
+        },
+        {
+          "id": "replied_on_the_csv_ticket",
+          "required": true,
+          "passed": true
+        }
+      ]
+    }
+  ]
+}

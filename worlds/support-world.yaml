@@ -1,0 +1,60 @@
+id: support-world
+title: A support desk, its bug tracker and its escalation channel
+twins: [zendesk, jira, slack]
+world: static
+start_time: 2026-11-10T17:00:00Z
+timeout: 2m
+task: "Erin Walsh at Ridgeway Robotics wrote in because her monthly CSV export is empty. Reply on that ticket, make sure engineering has the bug in project OPS without filing a duplicate, and post the escalation in #eng-escalations."
+seed:
+  zendesk:
+    account: { subdomain: acme, name: Acme }
+    apiUser: support@acme.example
+    users:
+      - { email: support@acme.example, name: Acme Support, role: agent }
+      - { email: erin.walsh@ridgeway-robotics.example, name: Erin Walsh, organization: Ridgeway Robotics }
+    organizations:
+      - { name: Ridgeway Robotics, domains: [ridgeway-robotics.example] }
+    tickets:
+      - subject: Monthly CSV export is empty
+        requester: erin.walsh@ridgeway-robotics.example
+        status: open
+        comments:
+          - { author: erin.walsh@ridgeway-robotics.example, body: "Our monthly CSV export has been empty since Monday.", at: -26h }
+      - subject: Invoice shows the wrong billing address
+        requester: erin.walsh@ridgeway-robotics.example
+        status: open
+        comments:
+          - { author: erin.walsh@ridgeway-robotics.example, body: "The October invoice still shows our old address.", at: -3h }
+  jira:
+    site: { name: acme }
+    me: support
+    users:
+      - { ref: support, name: Acme Support, email: support@acme.example }
+      - { ref: rachel, name: Rachel Moore, email: rachel@acme.example }
+    projects:
+      - { key: OPS, name: Platform Operations, lead: rachel, created: -6000h }
+    issues:
+      - { ref: sso, project: OPS, type: Bug, summary: SSO login loops on Safari, status: To Do, reporter: rachel, created: -50h }
+      - { ref: csv, project: OPS, type: Bug, summary: CSV export returns an empty file, status: In Progress, assignee: rachel, reporter: rachel, created: -30h }
+  slack:
+    team: { name: Acme }
+    bot: $bot
+    users:
+      - { ref: bot, name: support-agent, is_bot: true }
+      - { ref: rachel, name: rachel, real_name: Rachel Moore, email: rachel@acme.example }
+    channels:
+      - { ref: eng, name: eng-escalations, members: [$bot, $rachel] }
+    messages:
+      - { channel: $eng, user: $rachel, text: "Looking at the empty CSV export today.", at: -2h }
+checks:
+  - id: replied_on_the_csv_ticket
+    trace: { called: "PUT /api/v2/tickets/4101*" }
+  - id: left_the_invoice_ticket_alone
+    trace: { not_called: "PUT /api/v2/tickets/4102*" }
+  - id: filed_no_duplicate
+    trace: { not_called: "POST /rest/api/*/issue" }
+  - id: commented_on_the_open_bug
+    trace: { called: "POST /rest/api/*/issue/OPS-2/comment" }
+  - id: posted_the_escalation
+    state: { slack.message: { channel: $eng, from: $bot } }
+pass: [replied_on_the_csv_ticket, left_the_invoice_ticket_alone, filed_no_duplicate, commented_on_the_open_bug, posted_the_escalation]

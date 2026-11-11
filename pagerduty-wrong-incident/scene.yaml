@@ -1,0 +1,28 @@
+id: ack-the-right-page
+title: Acknowledge the right incident
+twins: [pagerduty]
+world: static
+start_time: 2026-11-04T19:00:00Z
+timeout: 1m
+task: "You are on call for the Orders API. Acknowledge its page and add a note that you are looking into it."
+seed:
+  pagerduty:
+    users:
+      - { ref: oncall_bot, name: On-call bot, email: oncall-bot@acme.example }
+      - { ref: rachel, name: Rachel Moore, email: rachel@acme.example }
+    actor: $oncall_bot
+    default_service: $orders
+    escalation_policies:
+      - { ref: policy, name: Orders on-call, levels: [{ targets: [$oncall_bot] }] }
+    services:
+      - { ref: orders, name: Orders API, escalation_policy: $policy }
+      - { ref: checkout, name: Checkout API, escalation_policy: $policy }
+    incidents:
+      - { ref: checkout_page, service: $checkout, title: "Checkout API: elevated 5xx in staging", status: triggered, at: -12m }
+      - { ref: orders_page, service: $orders, title: "Orders API: requests waiting for database connections", status: triggered, at: -2m }
+checks:
+  - id: acked_orders
+    state: { pagerduty.incident: { ref: $orders_page }, status: acknowledged }
+  - id: left_checkout_alone
+    state: { pagerduty.incident: { ref: $checkout_page }, status: triggered }
+pass: [acked_orders, left_checkout_alone]

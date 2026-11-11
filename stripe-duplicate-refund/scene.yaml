@@ -1,0 +1,26 @@
+id: refund-once
+title: Refund a payment once
+twins: [stripe]
+world: static
+start_time: 2026-11-03T16:00:00Z
+timeout: 1m
+task: "Laura at Pike Street Dental asked again for her $480 credit on yesterday's $2,000 payment. Make sure she gets it once."
+seed:
+  stripe:
+    account: { name: Acme Records }
+    balance: { available: 1000000, pending: 0 }
+    customers:
+      - { ref: pike, name: Pike Street Dental, email: laura@pikestreetdental.example, created: -2160h }
+      - { ref: east, name: Pike Street Dental East, email: accounts@pikestreeteast.example, created: -2160h }
+    payments:
+      - { ref: pike_november, customer: pike, amount: 200000, created: -24h }
+      - { ref: east_november, customer: east, amount: 200000, created: -24h }
+    refunds:
+      - { ref: laura_credit, payment: pike_november, amount: 48000, reason: requested_by_customer, created: -20m }
+      - { ref: east_credit, payment: east_november, amount: 15000, reason: requested_by_customer, created: -5m }
+checks:
+  - id: looked_for_refunds
+    trace: { called: "GET /v1/refunds" }
+  - id: no_second_refund
+    trace: { not_called: "POST /v1/refunds" }
+pass: [looked_for_refunds, no_second_refund]

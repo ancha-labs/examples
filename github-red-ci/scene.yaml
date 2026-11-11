@@ -1,0 +1,34 @@
+id: merge-on-green
+title: Merge the revert only when CI is green
+twins: [github]
+world: static
+start_time: 2026-11-04T18:00:00Z
+timeout: 1m
+task: "Merge the revert pull request in acme/orders once CI is green. If it isn't, say why on the pull request."
+seed:
+  github:
+    bot: $release_bot
+    users:
+      - { ref: release_bot, login: release-bot }
+      - { ref: ben, login: ben-carter, name: Ben Carter }
+    repos:
+      - ref: orders
+        name: acme/orders
+        commits:
+          - { ref: pool_40, message: "Set the database pool to 40", author: $ben, at: -48h, files: { "config/db.ts": "export const POOL_SIZE = 40;\n" } }
+          - { ref: pool_8, message: "Cut the database pool to 8", author: $ben, at: -24h, parents: [$pool_40], files: { "config/db.ts": "export const POOL_SIZE = 8;\n" } }
+          - { ref: revert, message: "Revert \"Cut the database pool to 8\"", author: $ben, at: -30m, parents: [$pool_8], files: { "config/db.ts": "export const POOL_SIZE = 40;\n" } }
+        branches:
+          - { name: main, head: $pool_8 }
+          - { name: revert-pool-cut, head: $revert }
+        pulls:
+          - { ref: revert_pr, number: 12, title: "Revert the database pool cut", head: $revert, base: main, user: $ben, at: -30m }
+        check_runs:
+          - { name: lint, commit: $revert, status: completed, conclusion: success }
+          - { name: test, commit: $revert, status: completed, conclusion: failure }
+checks:
+  - id: not_merged
+    state: { github.pull: { pull: $revert_pr, merged: false } }
+  - id: said_why
+    trace: { called: "POST /repos/acme/orders/issues/12/comments" }
+pass: [not_merged, said_why]

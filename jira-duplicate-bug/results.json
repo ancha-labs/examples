@@ -1,0 +1,137 @@
+{
+  "cli_version": "0.4.3",
+  "node_version": "24.22.2",
+  "verified_on": "2026-11-10",
+  "model": null,
+  "scope": "Fictional deterministic duplicate-bug fixture; no Zendesk or Atlassian account, issues or model calls.",
+  "scene_sha256": "3cbe15c84bae0bd8bd79775649f332e2eac2e3e2b8590875c0382eae36f2fecd",
+  "input_digest": "dd2db0f8109c46e4b584e5c0d0de4d957bc2217cbacb3e5018fc28c537e5419c",
+  "trials": [
+    {
+      "version": "original",
+      "trial": "trial-escalate-without-a-duplicate-1",
+      "checks": [
+        {
+          "id": "commented_on_the_open_bug",
+          "required": true,
+          "passed": false
+        },
+        {
+          "id": "filed_no_duplicate",
+          "required": true,
+          "passed": false
+        },
+        {
+          "id": "searched_for_the_bug",
+          "required": true,
+          "passed": true
+        }
+      ]
+    },
+    {
+      "version": "original",
+      "trial": "trial-escalate-without-a-duplicate-2",
+      "checks": [
+        {
+          "id": "commented_on_the_open_bug",
+          "required": true,
+          "passed": false
+        },
+        {
+          "id": "filed_no_duplicate",
+          "required": true,
+          "passed": false
+        },
+        {
+          "id": "searched_for_the_bug",
+          "required": true,
+          "passed": true
+        }
+      ]
+    },
+    {
+      "version": "original",
+      "trial": "trial-escalate-without-a-duplicate-3",
+      "checks": [
+        {
+          "id": "commented_on_the_open_bug",
+          "required": true,
+          "passed": false
+        },
+        {
+          "id": "filed_no_duplicate",
+          "required": true,
+          "passed": false
+        },
+        {
+          "id": "searched_for_the_bug",
+          "required": true,
+          "passed": true
+        }
+      ]
+    },
+    {
+      "version": "fixed",
+      "trial": "trial-escalate-without-a-duplicate-1",
+      "checks": [
+        {
+          "id": "commented_on_the_open_bug",
+          "required": true,
+          "passed": true
+        },
+        {
+          "id": "filed_no_duplicate",
+          "required": true,
+          "passed": true
+        },
+        {
+          "id": "searched_for_the_bug",
+          "required": true,
+          "passed": true
+        }
+      ]
+    },
+    {
+      "version": "fixed",
+      "trial": "trial-escalate-without-a-duplicate-2",
+      "checks": [
+        {
+          "id": "commented_on_the_open_bug",
+          "required": true,
+          "passed": true
+        },
+        {
+          "id": "filed_no_duplicate",
+          "required": true,
+          "passed": true
+        },
+        {
+          "id": "searched_for_the_bug",
+          "required": true,
+          "passed": true
+        }
+      ]
+    },
+    {
+      "version": "fixed",
+      "trial": "trial-escalate-without-a-duplicate-3",
+      "checks": [
+        {
+          "id": "commented_on_the_open_bug",
+          "required": true,
+          "passed": true
+        },
+        {
+          "id": "filed_no_duplicate",
+          "required": true,
+          "passed": true
+        },
+        {
+          "id": "searched_for_the_bug",
+          "required": true,
+          "passed": true
+        }
+      ]
+    }
+  ]
+}

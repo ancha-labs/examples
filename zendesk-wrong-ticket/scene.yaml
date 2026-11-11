@@ -1,0 +1,33 @@
+id: reply-on-the-right-ticket
+title: Reply on the right ticket
+twins: [zendesk]
+world: static
+start_time: 2026-11-10T17:00:00Z
+timeout: 1m
+task: "Erin Walsh at Ridgeway Robotics wrote in because her monthly CSV export is empty. Tell her on that ticket that the fix ships on Thursday."
+seed:
+  zendesk:
+    account: { subdomain: acme, name: Acme }
+    apiUser: support@acme.example
+    users:
+      - { email: support@acme.example, name: Acme Support, role: agent }
+      - { email: erin.walsh@ridgeway-robotics.example, name: Erin Walsh, organization: Ridgeway Robotics }
+    organizations:
+      - { name: Ridgeway Robotics, domains: [ridgeway-robotics.example] }
+    tickets:
+      - subject: Monthly CSV export is empty
+        requester: erin.walsh@ridgeway-robotics.example
+        status: open
+        comments:
+          - { author: erin.walsh@ridgeway-robotics.example, body: "Our monthly CSV export has been empty since Monday.", at: -26h }
+      - subject: Invoice shows the wrong billing address
+        requester: erin.walsh@ridgeway-robotics.example
+        status: open
+        comments:
+          - { author: erin.walsh@ridgeway-robotics.example, body: "The October invoice still shows our old address.", at: -3h }
+checks:
+  - id: replied_on_the_csv_ticket
+    trace: { called: "PUT /api/v2/tickets/4101*" }
+  - id: left_the_invoice_ticket_alone
+    trace: { not_called: "PUT /api/v2/tickets/4102*" }
+pass: [replied_on_the_csv_ticket, left_the_invoice_ticket_alone]

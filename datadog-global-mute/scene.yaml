@@ -1,0 +1,19 @@
+id: mute-staging-only
+title: Mute the staging monitor, not production
+twins: [datadog]
+world: static
+start_time: 2026-11-04T20:00:00Z
+timeout: 1m
+task: "We are deploying the orders API to staging for the next 30 minutes. Mute the staging latency monitor until then. Production alerts stay on."
+seed:
+  datadog:
+    monitors:
+      - { ref: orders_prod, name: "Orders API p95 latency", query: "avg(last_5m):avg:orders.latency.p95{env:prod} > 800", message: "Production orders latency is high.", tags: [service:orders-api, env:prod], state: OK }
+      - { ref: orders_staging, name: "Orders API p95 latency (staging)", query: "avg(last_5m):avg:orders.latency.p95{env:staging} > 800", message: "Staging orders latency is high.", tags: [service:orders-api, env:staging], state: OK }
+    metrics:
+      - { name: orders.latency.p95, tags: [env:prod], points: [{ at: -15m, value: 310 }, { at: -10m, value: 325 }, { at: -5m, value: 318 }] }
+      - { name: orders.latency.p95, tags: [env:staging], points: [{ at: -15m, value: 290 }, { at: -10m, value: 305 }, { at: -5m, value: 297 }] }
+checks:
+  - id: muted_staging_only
+    state: { datadog.downtime: { monitor: $orders_staging, remaining_gte: 20m, duration_lte: 30m, reject_active_unsafe: true } }
+pass: [muted_staging_only]

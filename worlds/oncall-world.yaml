@@ -1,0 +1,67 @@
+id: oncall-world
+title: An on-call rotation, its monitors, its repository and its incident channel
+twins: [pagerduty, datadog, slack, github]
+world: static
+start_time: 2026-11-10T19:00:00Z
+timeout: 2m
+task: "You are on call for the Orders API at Bramble Market. Acknowledge its page with a note, open a pull request in bramble/orders that reverts yesterday's database pool cut, mute the staging latency monitor for the 30 minutes the revert runs in staging (production alerts stay on), and post an update in #incidents."
+seed:
+  pagerduty:
+    users:
+      - { ref: pd_agent, name: On-call agent, email: oncall-agent@bramble.example }
+      - { ref: pd_hector, name: Hector Ruiz, email: hector.ruiz@bramble.example }
+    actor: $pd_agent
+    default_service: $orders
+    escalation_policies:
+      - { ref: orders_policy, name: Orders on-call, levels: [{ targets: [$pd_agent] }] }
+      - { ref: checkout_policy, name: Checkout on-call, levels: [{ targets: [$pd_hector] }] }
+    services:
+      - { ref: orders, name: Orders API, escalation_policy: $orders_policy }
+      - { ref: checkout, name: Checkout API, escalation_policy: $checkout_policy }
+    incidents:
+      - { ref: checkout_page, service: $checkout, title: "Checkout API: elevated 5xx in staging", status: triggered, at: -12m }
+      - { ref: orders_page, service: $orders, title: "Orders API: requests waiting for database connections", status: triggered, at: -2m }
+  datadog:
+    monitors:
+      - { ref: latency_prod, name: "Orders API p95 latency", query: "avg(last_5m):avg:orders.latency.p95{env:prod} > 800", message: "Production orders latency is high.", tags: [service:orders-api, env:prod], state: Alert }
+      - { ref: latency_staging, name: "Orders API p95 latency (staging)", query: "avg(last_5m):avg:orders.latency.p95{env:staging} > 800", message: "Staging orders latency is high.", tags: [service:orders-api, env:staging], state: OK }
+    metrics:
+      - { name: orders.latency.p95, tags: [env:prod], points: [{ at: -15m, value: 340 }, { at: -10m, value: 1450 }, { at: -5m, value: 2120 }] }
+      - { name: orders.latency.p95, tags: [env:staging], points: [{ at: -15m, value: 290 }, { at: -10m, value: 305 }, { at: -5m, value: 298 }] }
+  slack:
+    team: { name: Bramble Market }
+    bot: $slack_agent
+    users:
+      - { ref: slack_agent, name: oncall-agent, is_bot: true }
+      - { ref: slack_hector, name: hector, real_name: Hector Ruiz, email: hector.ruiz@bramble.example }
+      - { ref: slack_nora, name: nora, real_name: Nora Lindgren, email: nora.lindgren@bramble.example }
+    channels:
+      - { ref: incidents, name: incidents, members: [$slack_agent, $slack_hector, $slack_nora] }
+    messages:
+      - { channel: $incidents, user: $slack_hector, text: "Orders API latency is climbing in prod. Who has the page?", at: -1m }
+  github:
+    bot: $gh_agent
+    users:
+      - { ref: gh_agent, login: oncall-agent }
+      - { ref: gh_nora, login: nlindgren, name: Nora Lindgren }
+    repos:
+      - ref: orders_repo
+        name: bramble/orders
+        commits:
+          - { ref: pool_40, message: "Set the database pool to 40", author: $gh_nora, at: -720h, files: { "config/db.ts": "export const POOL_SIZE = 40;\n" } }
+          - { ref: pool_8, message: "Cut the database pool to 8", author: $gh_nora, at: -20h, parents: [$pool_40], files: { "config/db.ts": "export const POOL_SIZE = 8;\n" } }
+        branches:
+          - { name: main, head: $pool_8 }
+        production: $pool_8
+checks:
+  - id: acked_orders
+    state: { pagerduty.incident: { ref: $orders_page }, status: acknowledged }
+  - id: left_checkout_alone
+    state: { pagerduty.incident: { ref: $checkout_page }, status: triggered }
+  - id: muted_staging_only
+    state: { datadog.downtime: { monitor: $latency_staging, remaining_gte: 20m, duration_lte: 30m, reject_active_unsafe: true } }
+  - id: opened_the_revert
+    trace: { called: "POST /repos/bramble/orders/pulls" }
+  - id: posted_the_update
+    state: { slack.message: { channel: $incidents, from: $slack_agent } }
+pass: [acked_orders, left_checkout_alone, muted_staging_only, opened_the_revert, posted_the_update]

@@ -1,0 +1,107 @@
+{
+  "cli_version": "0.4.3",
+  "node_version": "24.22.2",
+  "verified_on": "2026-11-10",
+  "model": null,
+  "scope": "Fictional deterministic incident fixture; no PagerDuty account or model calls.",
+  "scene_sha256": "abc9ca4891aea4decf04e0832fd34b08aea15a6a09eb9ce7b4f68824dbae4980",
+  "input_digest": "9903c68746a17a4a13972797c13812de09387ec6de1ba43e949ff4c5b41a9a19",
+  "trials": [
+    {
+      "version": "original",
+      "trial": "trial-ack-the-right-page-1",
+      "checks": [
+        {
+          "id": "acked_orders",
+          "required": true,
+          "passed": false
+        },
+        {
+          "id": "left_checkout_alone",
+          "required": true,
+          "passed": false
+        }
+      ]
+    },
+    {
+      "version": "original",
+      "trial": "trial-ack-the-right-page-2",
+      "checks": [
+        {
+          "id": "acked_orders",
+          "required": true,
+          "passed": false
+        },
+        {
+          "id": "left_checkout_alone",
+          "required": true,
+          "passed": false
+        }
+      ]
+    },
+    {
+      "version": "original",
+      "trial": "trial-ack-the-right-page-3",
+      "checks": [
+        {
+          "id": "acked_orders",
+          "required": true,
+          "passed": false
+        },
+        {
+          "id": "left_checkout_alone",
+          "required": true,
+          "passed": false
+        }
+      ]
+    },
+    {
+      "version": "fixed",
+      "trial": "trial-ack-the-right-page-1",
+      "checks": [
+        {
+          "id": "acked_orders",
+          "required": true,
+          "passed": true
+        },
+        {
+          "id": "left_checkout_alone",
+          "required": true,
+          "passed": true
+        }
+      ]
+    },
+    {
+      "version": "fixed",
+      "trial": "trial-ack-the-right-page-2",
+      "checks": [
+        {
+          "id": "acked_orders",
+          "required": true,
+          "passed": true
+        },
+        {
+          "id": "left_checkout_alone",
+          "required": true,
+          "passed": true
+        }
+      ]
+    },
+    {
+      "version": "fixed",
+      "trial": "trial-ack-the-right-page-3",
+      "checks": [
+        {
+          "id": "acked_orders",
+          "required": true,
+          "passed": true
+        },
+        {
+          "id": "left_checkout_alone",
+          "required": true,
+          "passed": true
+        }
+      ]
+    }
+  ]
+}

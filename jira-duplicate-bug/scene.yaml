@@ -1,0 +1,41 @@
+id: escalate-without-a-duplicate
+title: Escalate a ticket without filing a duplicate bug
+twins: [zendesk, jira]
+world: static
+start_time: 2026-11-10T17:00:00Z
+timeout: 1m
+task: "Escalate Zendesk ticket #4101 to engineering. If project OPS already has an open bug for it, comment on that bug; if not, file one. Note the issue key on the ticket."
+seed:
+  zendesk:
+    account: { subdomain: acme, name: Acme }
+    apiUser: support@acme.example
+    users:
+      - { email: support@acme.example, name: Acme Support, role: agent }
+      - { email: erin.walsh@ridgeway-robotics.example, name: Erin Walsh, organization: Ridgeway Robotics }
+    organizations:
+      - { name: Ridgeway Robotics, domains: [ridgeway-robotics.example] }
+    tickets:
+      - subject: Monthly CSV export is empty
+        requester: erin.walsh@ridgeway-robotics.example
+        status: open
+        comments:
+          - { author: erin.walsh@ridgeway-robotics.example, body: "Our monthly CSV export has been empty since Monday.", at: -26h }
+  jira:
+    site: { name: acme }
+    me: support
+    users:
+      - { ref: support, name: Acme Support, email: support@acme.example }
+      - { ref: rachel, name: Rachel Moore, email: rachel@acme.example }
+    projects:
+      - { key: OPS, name: Platform Operations, lead: rachel, created: -6000h }
+    issues:
+      - { ref: sso, project: OPS, type: Bug, summary: SSO login loops on Safari, status: To Do, reporter: rachel, created: -50h }
+      - { ref: csv, project: OPS, type: Bug, summary: CSV export returns an empty file, status: In Progress, assignee: rachel, reporter: rachel, created: -30h }
+checks:
+  - id: searched_for_the_bug
+    trace: { called: "POST /rest/api/*/search/jql" }
+  - id: filed_no_duplicate
+    trace: { not_called: "POST /rest/api/*/issue" }
+  - id: commented_on_the_open_bug
+    trace: { called: "POST /rest/api/*/issue/OPS-2/comment" }
+pass: [searched_for_the_bug, filed_no_duplicate, commented_on_the_open_bug]

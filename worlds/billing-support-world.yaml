@@ -1,0 +1,65 @@
+id: billing-support-world
+title: A billing desk, its payments and its inbox
+twins: [stripe, zendesk, gmail]
+world: static
+start_time: 2026-11-10T17:00:00Z
+timeout: 2m
+task: "Theresa Nolan at Elm Grove Pediatrics was billed for 12 providers in November instead of 10. Make sure the $58 overcharge is refunded once, answer her on that ticket, and reply to her bookkeeper's email with the refund."
+seed:
+  stripe:
+    account: { name: Holloway Booking, statement_descriptor: HOLLOWAY BOOKING }
+    balance: { available: 2500000, pending: 0 }
+    customers:
+      - { ref: elm_grove, name: Elm Grove Pediatrics, email: theresa.nolan@elmgrovepeds.example, created: -4000h }
+      - { ref: lakeview, name: Lakeview Animal Clinic, email: gail.morrison@lakeviewvets.example, created: -3000h }
+    payments:
+      - { ref: elm_grove_november, customer: elm_grove, amount: 34800, description: "November, 12 providers", created: -216h }
+      - { ref: lakeview_november, customer: lakeview, amount: 14500, description: "November, 5 providers", created: -216h }
+    refunds:
+      - { ref: elm_grove_credit, payment: elm_grove_november, amount: 5800, reason: requested_by_customer, created: -40m }
+      - { ref: lakeview_credit, payment: lakeview_november, amount: 2900, reason: requested_by_customer, created: -5m }
+  zendesk:
+    account: { subdomain: hollowaybooking, name: Holloway Booking }
+    apiUser: billing@hollowaybooking.example
+    users:
+      - { email: billing@hollowaybooking.example, name: Holloway Billing, role: agent }
+      - { email: theresa.nolan@elmgrovepeds.example, name: Theresa Nolan, organization: Elm Grove Pediatrics }
+    organizations:
+      - { name: Elm Grove Pediatrics, domains: [elmgrovepeds.example] }
+    tickets:
+      - subject: Billed for 12 providers in November
+        requester: theresa.nolan@elmgrovepeds.example
+        status: open
+        comments:
+          - { author: theresa.nolan@elmgrovepeds.example, body: "Our November charge was $348, for 12 providers. We have 10. Can you refund the difference?", at: -26h }
+      - subject: Adding our Maple Street office
+        requester: theresa.nolan@elmgrovepeds.example
+        status: open
+        comments:
+          - { author: theresa.nolan@elmgrovepeds.example, body: "We open a second office on Maple Street in December. How do we add it to our account?", at: -3h }
+  gmail:
+    agent: billing@hollowaybooking.example
+    mailboxes:
+      - address: billing@hollowaybooking.example
+        name: Holloway Billing
+        messages:
+          - ref: ron_question
+            from: Ron Becker <ron@beckerbookkeeping.example>
+            subject: Elm Grove Pediatrics, November overcharge
+            body: "Hi,\n\nI keep the books for Elm Grove Pediatrics. Theresa says November was billed for 12 providers instead of 10. Can you send me the refund amount and date for our records?\n\nThanks,\nRon Becker"
+            at: -2h
+          - ref: gail_thanks
+            from: Gail Morrison <gail.morrison@lakeviewvets.example>
+            subject: Lakeview credit
+            body: "Thanks for the credit for Dr. Brandt's week off. Got the email from Stripe.\n\nGail"
+            at: -3m
+checks:
+  - id: looked_for_refunds
+    trace: { called: "GET /v1/refunds" }
+  - id: no_second_refund
+    trace: { not_called: "POST /v1/refunds" }
+  - id: replied_on_the_billing_ticket
+    trace: { called: "PUT /api/v2/tickets/4101*", not_called: "PUT /api/v2/tickets/4102*" }
+  - id: answered_the_bookkeeper
+    state: { gmail.thread: { of: ron_question, label: SENT } }
+pass: [looked_for_refunds, no_second_refund, replied_on_the_billing_ticket, answered_the_bookkeeper]

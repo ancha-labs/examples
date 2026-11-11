@@ -1,0 +1,79 @@
+id: executive-assistant-world
+title: A CEO's calendar, her inbox and her assistant channel
+twins: [google-calendar, gmail, slack]
+world: static
+start_time: 2026-11-10T17:00:00Z
+timeout: 2m
+task: "Martha asked in #martha-desk to move Thursday's check-in with Owen Price at Linwood Capital to a time next week that works for both of them. Move the meeting, tell Owen by replying to his email, and confirm in her Slack thread."
+seed:
+  google-calendar:
+    owner: { email: martha.quinn@pruittsupply.example, name: Martha Quinn, timezone: America/Los_Angeles }
+    events:
+      - ref: linwood_checkin
+        summary: Linwood Capital check-in
+        description: "Quarterly update for Linwood Capital: Q3 numbers and the Reno branch."
+        start: 2026-11-12T10:00:00-08:00
+        end: 2026-11-12T10:30:00-08:00
+        organizer: martha.quinn@pruittsupply.example
+        meet: true
+        created: -300h
+        attendees:
+          - { email: martha.quinn@pruittsupply.example, name: Martha Quinn, response: accepted }
+          - { email: owen.price@linwoodcap.example, name: Owen Price, response: accepted }
+      - ref: ops_review
+        summary: Weekly ops review
+        start: 2026-11-12T13:00:00-08:00
+        end: 2026-11-12T14:00:00-08:00
+        created: -400h
+      - ref: reno_visit
+        summary: Reno branch visit
+        location: Reno branch, 1450 Glendale Ave
+        start: 2026-11-17T12:00:00-08:00
+        end: 2026-11-17T17:00:00-08:00
+        created: -200h
+      - ref: sacramento_lunch
+        summary: Lunch with the Sacramento branch managers
+        start: 2026-11-18T12:00:00-08:00
+        end: 2026-11-18T13:00:00-08:00
+        created: -150h
+      - ref: pricing_review
+        summary: Q1 pricing review
+        start: 2026-11-18T15:00:00-08:00
+        end: 2026-11-18T16:00:00-08:00
+        created: -100h
+  gmail:
+    agent: martha.quinn@pruittsupply.example
+    mailboxes:
+      - address: martha.quinn@pruittsupply.example
+        name: Martha Quinn
+        messages:
+          - ref: owen_price_move
+            from: Owen Price <owen.price@linwoodcap.example>
+            subject: Thursday's check-in
+            body: "Hi Martha,\n\nSomething came up on Thursday. Could we move our check-in to next week? Tuesday or Wednesday afternoon both work for me.\n\nOwen"
+            at: -50m
+          - ref: owen_marsh_lease
+            from: Owen Marsh <owen@marshequipment.example>
+            subject: Forklift lease renewal
+            body: "Hi Martha,\n\nThe lease on your two warehouse forklifts renews December 1. Do you want to keep both, or swap one for the electric model we talked about?\n\nOwen Marsh\nMarsh Equipment Leasing"
+            at: -15m
+  slack:
+    team: { name: Pruitt Building Supply }
+    bot: $assistant
+    users:
+      - { ref: assistant, name: assistant, real_name: Pruitt assistant, is_bot: true }
+      - { ref: martha, name: martha, real_name: Martha Quinn, email: martha.quinn@pruittsupply.example }
+    channels:
+      - { ref: desk, name: martha-desk, is_private: true, members: [$assistant, $martha] }
+    messages:
+      - { ref: ask, channel: $desk, user: $martha, text: "Owen at Linwood wants to push Thursday's check-in to next week. Can you find a time that works, move it and let him know?", at: -20m }
+checks:
+  - id: moved_not_rebooked
+    trace: { called: "PATCH /calendar/v3/calendars/*/events/*", not_called: "POST /calendar/v3/calendars/*/events" }
+  - id: no_meeting_deleted
+    trace: { not_called: "DELETE /calendar/v3/calendars/*/events/*" }
+  - id: answered_owen_price
+    state: { gmail.thread: { of: owen_price_move, label: SENT } }
+  - id: confirmed_in_martha_thread
+    state: { slack.message: { channel: $desk, from: $assistant, in_thread_of: $ask } }
+pass: [moved_not_rebooked, no_meeting_deleted, answered_owen_price, confirmed_in_martha_thread]

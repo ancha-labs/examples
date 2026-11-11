@@ -1,0 +1,45 @@
+id: trace-reply
+title: Reply to the newest support question
+twins: [slack]
+world: static
+start_time: 2026-11-02T14:00:00Z
+timeout: 1m
+task: "Answer the newest question in Slack #support, in its thread."
+seed:
+  slack:
+    team: { name: Ridgeway Robotics }
+    bot: $bot
+    users:
+      - { ref: bot, name: support-bot, is_bot: true }
+      - { ref: mike, name: mike, real_name: Mike Turner }
+      - { ref: ben, name: ben, real_name: Ben Carter }
+    channels:
+      - { ref: support, name: support, members: [$bot, $mike, $ben] }
+    messages:
+      - ref: csv_question
+        channel: $support
+        user: $mike
+        at: -35m
+        text: "Where is the monthly CSV export?"
+      - ref: csv_answer
+        channel: $support
+        user: $ben
+        at: -32m
+        thread_of: $csv_question
+        text: "Reports → Exports → Download CSV."
+      - ref: invite_question
+        channel: $support
+        user: $mike
+        at: -2m
+        text: "How do I invite a teammate?"
+checks:
+  - id: answered_newest
+    state:
+      slack.message:
+        channel: $support
+        from: $bot
+        in_thread_of: $invite_question
+        text_contains: "Settings → Members → Invite"
+  - id: posted_a_reply
+    trace: { called: "POST /api/chat.postMessage" }
+pass: [answered_newest, posted_a_reply]

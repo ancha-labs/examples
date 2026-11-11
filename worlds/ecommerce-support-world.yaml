@@ -1,0 +1,103 @@
+id: ecommerce-support-world
+title: A coffee roaster's shop, its payments and its support desk
+twins: [shopify, stripe, zendesk]
+world: static
+start_time: 2026-11-10T17:00:00Z
+timeout: 2m
+task: "Joanne Pierce wrote in to cancel order #1047 and her coffee subscription. Our policy: an order that has shipped comes back as a return, not a cancellation, and a subscription ends at the end of the month she has paid for. Handle both and answer her on her ticket."
+seed:
+  shopify:
+    shop: { name: Ostrom Coffee Roasters, domain: ostrom-coffee, email: shop@ostromcoffee.example, owner: Dan Ostrom, timezone: America/Los_Angeles, order_number_start: 1046, created: -9000h }
+    locations:
+      - ref: roastery
+        name: Portland roastery
+        address: { address1: 2210 NW Front Ave, city: Portland, province_code: OR, zip: "97209" }
+        created: -9000h
+    products:
+      - ref: guji
+        title: Ethiopia Guji
+        vendor: Ostrom Coffee Roasters
+        product_type: Coffee
+        options: [Grind]
+        created: -3000h
+        variants:
+          - { ref: guji_whole, options: [Whole bean], sku: GUJI-12-WB, price: "19.00", inventory: { roastery: 140 } }
+          - { ref: guji_ground, options: [Ground], sku: GUJI-12-GR, price: "19.00", inventory: { roastery: 85 } }
+    customers:
+      - ref: joanne
+        first_name: Joanne
+        last_name: Pierce
+        email: joanne.pierce@mailbox.example
+        state: ENABLED
+        created: -2000h
+        address: { first_name: Joanne, last_name: Pierce, address1: 418 SE Harrison St, city: Portland, province_code: OR, zip: "97214" }
+    orders:
+      - ref: order_1046
+        customer: joanne
+        created: -500h
+        line_items: [{ variant: guji_whole, quantity: 1 }]
+        shipping: { title: UPS Ground, price: "6.00" }
+        gateway: stripe
+        shipping_address: { first_name: Joanne, last_name: Pierce, address1: 418 SE Harrison St, city: Portland, province_code: OR, zip: "97214" }
+        fulfillments:
+          - at: -490h
+            tracking: { company: UPS, number: 1Z9F41E80326715540 }
+            delivered: -440h
+      - ref: order_1047
+        customer: joanne
+        created: -30h
+        line_items: [{ variant: guji_whole, quantity: 2 }]
+        shipping: { title: UPS Ground, price: "6.00" }
+        gateway: stripe
+        shipping_address: { first_name: Joanne, last_name: Pierce, address1: 418 SE Harrison St, city: Portland, province_code: OR, zip: "97214" }
+        fulfillments:
+          - at: -20h
+            tracking: { company: UPS, number: 1Z9F41E80327718823 }
+  stripe:
+    account: { name: Ostrom Coffee Roasters, statement_descriptor: OSTROM COFFEE }
+    balance: { available: 1850000, pending: 0 }
+    products:
+      - ref: plan
+        name: Two-bag monthly plan
+        prices:
+          - { ref: plan_monthly, unit_amount: 3400, nickname: Two bags a month, recurring: { interval: month } }
+    customers:
+      - ref: joanne_billing
+        name: Joanne Pierce
+        email: joanne.pierce@mailbox.example
+        created: -2000h
+        card: { brand: visa, last4: "4242", exp_month: 8, exp_year: 2028 }
+    subscriptions:
+      - { ref: joanne_plan, customer: joanne_billing, items: [{ price: plan_monthly }], start: -1500h, current_period_start: -168h }
+    payments:
+      - { ref: order_1046_payment, customer: joanne_billing, amount: 2500, description: "Order #1046", created: -500h }
+      - { ref: order_1047_payment, customer: joanne_billing, amount: 4400, description: "Order #1047", created: -30h }
+  zendesk:
+    account: { subdomain: ostromcoffee, name: Ostrom Coffee Roasters }
+    apiUser: help@ostromcoffee.example
+    users:
+      - { email: help@ostromcoffee.example, name: Ostrom Support, role: agent }
+      - { email: joanne.pierce@mailbox.example, name: Joanne Pierce }
+    tickets:
+      - subject: Where is order 1046?
+        requester: joanne.pierce@mailbox.example
+        assignee: help@ostromcoffee.example
+        status: solved
+        comments:
+          - { author: joanne.pierce@mailbox.example, body: "Has order 1046 shipped yet?", at: -480h }
+          - { author: help@ostromcoffee.example, body: "It shipped yesterday with UPS. It should arrive Thursday.", at: -470h }
+      - subject: Cancel order 1047 and my subscription
+        requester: joanne.pierce@mailbox.example
+        status: open
+        comments:
+          - { author: joanne.pierce@mailbox.example, body: "Hi, please cancel order #1047. I meant to order ground coffee, not whole bean. And please cancel my monthly plan, I'm moving abroad in December.", at: -40m }
+checks:
+  - id: queried_shopify
+    trace: { called: "POST /admin/api/*/graphql.json" }
+  - id: no_refund_for_a_shipped_order
+    trace: { not_called: "POST /v1/refunds" }
+  - id: plan_ends_at_period_end
+    trace: { called: "POST /v1/subscriptions/*", not_called: "DELETE /v1/subscriptions/*" }
+  - id: answered_on_her_ticket
+    trace: { called: "PUT /api/v2/tickets/4102*" }
+pass: [queried_shopify, no_refund_for_a_shipped_order, plan_ends_at_period_end, answered_on_her_ticket]

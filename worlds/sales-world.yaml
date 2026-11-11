@@ -1,0 +1,60 @@
+id: sales-world
+title: A sales inbox, the CRM of record and the marketing CRM
+twins: [gmail, salesforce, hubspot]
+world: static
+start_time: 2026-11-10T16:00:00Z
+timeout: 2m
+task: "You work Tess Morgan's inbox at Quarry Payroll. Martin Okafor at Holloway Veterinary Group asked for a quote for their three new clinics. In Salesforce, move the opportunity for the new clinics to Proposal/Price Quote and mark Martin as contacted (he may already be there). In HubSpot, move Martin to the opportunity stage. Then reply to Martin in his thread."
+seed:
+  gmail:
+    agent: tess.morgan@quarrypayroll.example
+    mailboxes:
+      - address: tess.morgan@quarrypayroll.example
+        name: Tess Morgan
+        messages:
+          - ref: renewal_paperwork
+            from: "Gwen Hadley <gwen.hadley@hollowayvet.example>"
+            to: tess.morgan@quarrypayroll.example
+            subject: 2027 renewal paperwork
+            body: "Hi Tess,\n\nLegal has the renewal order form. Expect it back next week.\n\nGwen"
+            at: -50h
+          - ref: clinics_quote
+            from: "Martin Okafor <martin.okafor@hollowayvet.example>"
+            to: tess.morgan@quarrypayroll.example
+            cc: gwen.hadley@hollowayvet.example
+            subject: Quote for our three new clinics
+            body: "Hi Tess,\n\nWe open three new clinics in January, about 45 employees between them. Could you send a quote for adding them to our plan by Friday?\n\nThanks,\nMartin Okafor\nFinance Director, Holloway Veterinary Group"
+            at: -3h
+  salesforce:
+    org: { id: 00D000000000001AAA, name: Quarry Payroll }
+    accounts:
+      - { Id: 001000000000101AAA, Name: Holloway Veterinary Group, Industry: Healthcare, Type: Customer, Website: "https://hollowayvet.example", NumberOfEmployees: 140, BillingCountry: United States }
+    contacts:
+      - { Id: 003000000000101AAA, FirstName: Gwen, LastName: Hadley, Email: gwen.hadley@hollowayvet.example, Title: Director of Operations, AccountId: 001000000000101AAA }
+    leads:
+      - { Id: 00Q000000000101AAA, FirstName: Martin, LastName: Okafor, Company: Holloway Veterinary Group, Email: martin.okafor@hollowayvet.example, Title: Finance Director, Status: Open - Not Contacted, LeadSource: Webinar }
+    opportunities:
+      - { Id: 006000000000101AAA, Name: "Holloway Veterinary Group: 2027 renewal", AccountId: 001000000000101AAA, StageName: Negotiation/Review, CloseDate: "2026-12-15", Amount: 38400, Probability: 80 }
+      - { Id: 006000000000102AAA, Name: "Holloway Veterinary Group: three new clinics", AccountId: 001000000000101AAA, StageName: Qualification, CloseDate: "2027-01-29", Amount: 21600, Probability: 20 }
+  hubspot:
+    portal: { id: "620114", name: Quarry Payroll }
+    companies:
+      - { id: "101", properties: { name: Holloway Veterinary Group, domain: hollowayvet.example, industry: VETERINARY, lifecyclestage: customer } }
+    contacts:
+      - { id: "201", properties: { firstname: Gwen, lastname: Hadley, email: gwen.hadley@hollowayvet.example, jobtitle: Director of Operations, company: Holloway Veterinary Group, lifecyclestage: customer } }
+      - { id: "202", properties: { firstname: Martin, lastname: Okafor, email: martin.okafor@hollowayvet.example, jobtitle: Finance Director, company: Holloway Veterinary Group, lifecyclestage: lead, hs_lead_status: NEW } }
+    associations:
+      - { from: { type: contacts, id: "201" }, to: { type: companies, id: "101" }, typeId: 1 }
+      - { from: { type: contacts, id: "202" }, to: { type: companies, id: "101" }, typeId: 1 }
+checks:
+  - id: moved_the_clinics_deal
+    trace: { called: "PATCH /services/data/v67.0/sobjects/Opportunity/006000000000102AAA" }
+  - id: left_the_renewal_alone
+    trace: { not_called: "PATCH /services/data/v67.0/sobjects/Opportunity/006000000000101AAA" }
+  - id: no_duplicate_person
+    trace: { not_called: ["POST /services/data/v67.0/sobjects/Lead", "POST /services/data/v67.0/sobjects/Contact"] }
+  - id: moved_him_in_hubspot
+    trace: { called: "PATCH /crm/v3/objects/contacts/202" }
+  - id: replied_in_his_thread
+    state: { gmail.thread: { of: clinics_quote, messages_gte: 2 } }
+pass: [moved_the_clinics_deal, left_the_renewal_alone, no_duplicate_person, moved_him_in_hubspot, replied_in_his_thread]
