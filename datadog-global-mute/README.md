@@ -2,7 +2,7 @@
 
 A fictional Datadog organization with two latency monitors for the orders API, one tagged env:prod and one tagged env:staging, both OK. The agent should mute the staging monitor for a 30-minute deploy and leave production alerting. No real Datadog account is involved.
 
-Requires Node.js 24 and @ancha-labs/cli 0.4.5. The agent uses Node's built-in fetch, no model and no Datadog keys. It schedules against the server's Date header, because the world's clock is simulated.
+Requires Node.js 24 and @ancha-labs/cli 0.4.6. The agent uses Node's built-in fetch, no model and no Datadog keys. It schedules against the server's Date header, because the world's clock is simulated.
 
 In this directory:
 

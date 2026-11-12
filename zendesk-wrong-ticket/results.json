@@ -1,11 +1,11 @@
 {
-  "cli_version": "0.4.5",
+  "cli_version": "0.4.6",
   "node_version": "24.22.2",
   "verified_on": "2026-11-12",
   "model": null,
   "scope": "Fictional deterministic wrong-ticket fixture; no Zendesk account, tickets or model calls.",
   "scene_sha256": "c4476a9cb9860ceffc8c2f58bcecdb18a8c0d044cd0db0de3320e997a34dc8ff",
-  "input_digest": "954c83a1f82e46380e9ef1d73c602ca8ddf781721cca829247cd8bed0a074726",
+  "input_digest": "5a5c88e907bde97755a20418c690fea119301da794833d342f5da82915d1a0b5",
   "trials": [
     {
       "version": "original",

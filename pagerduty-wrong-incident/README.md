@@ -2,7 +2,7 @@
 
 A fictional PagerDuty account for Acme. Two incidents are open: Checkout API, triggered twelve minutes ago from staging, and Orders API, triggered two minutes ago because requests are waiting for database connections. The agent is on call for the Orders API. No real PagerDuty account is involved.
 
-Requires Node.js 24 and @ancha-labs/cli 0.4.5. The agent uses Node's built-in fetch, no model and no PagerDuty token.
+Requires Node.js 24 and @ancha-labs/cli 0.4.6. The agent uses Node's built-in fetch, no model and no PagerDuty token.
 
 In this directory:
 

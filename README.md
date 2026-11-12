@@ -2,9 +2,9 @@
 
 Tests for AI agents, run against stateful replicas of the tools the agents call. Each folder holds a fictional
 situation, a scripted agent that makes one mistake, the checks that catch it and the results of three recorded trials.
-Every run here was recorded with [@ancha-labs/cli](https://www.npmjs.com/package/@ancha-labs/cli) 0.4.5 on Node.js 24.
+Every run here was recorded with [@ancha-labs/cli](https://www.npmjs.com/package/@ancha-labs/cli) 0.4.6 on Node.js 24.
 
-    npm install -g @ancha-labs/cli@0.4.5
+    npm install -g @ancha-labs/cli@0.4.6
 
 ## Examples
 

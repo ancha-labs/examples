@@ -2,7 +2,7 @@
 
 A fictional repository, acme/orders. Ben Carter opened pull request #12 to revert yesterday's cut of the database pool from 40 to 8. Its lint check passed and its test check failed. No real repository or GitHub account is involved.
 
-Requires Node.js 24 and @ancha-labs/cli 0.4.5. The agent uses Node's built-in fetch, no model and no GitHub token.
+Requires Node.js 24 and @ancha-labs/cli 0.4.6. The agent uses Node's built-in fetch, no model and no GitHub token.
 
 In this directory:
 
