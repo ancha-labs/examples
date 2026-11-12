@@ -2,7 +2,7 @@
 
 A fictional Stripe test-mode account, Acme Records. Laura at Pike Street Dental already received her $480 credit on yesterday's $2,000 payment twenty minutes ago; a second customer, Pike Street Dental East, was refunded $150 five minutes ago. No real payment, customer or Stripe account is involved.
 
-Requires Node.js 24 and @ancha-labs/cli 0.4.3. The agent uses Node's built-in fetch, no model and no Stripe key.
+Requires Node.js 24 and @ancha-labs/cli 0.4.5. The agent uses Node's built-in fetch, no model and no Stripe key.
 
 In this directory:
 

@@ -1,11 +1,11 @@
 {
-  "cli_version": "0.4.3",
+  "cli_version": "0.4.5",
   "node_version": "24.22.2",
-  "verified_on": "2026-11-10",
+  "verified_on": "2026-11-12",
   "model": null,
   "scope": "Fictional deterministic thread-selection fixture; no production services or model calls.",
   "scene_sha256": "65376e530078a1d8cb0beefd9f5e2e563cf946aed4bc05855a995045d8b3e5e8",
-  "input_digest": "5addaf334d567af843b112b3a86eb1e8951a4473b624542a3706d7669efebe36",
+  "input_digest": "68b7584d9ad1cb3c47839c94cdb15cd1a5540dc83ddc55950ad5eb4f8d6097c8",
   "trials": [
     {
       "version": "original",

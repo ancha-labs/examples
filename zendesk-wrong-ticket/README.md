@@ -2,7 +2,7 @@
 
 A fictional Zendesk account for Acme. Erin Walsh at Ridgeway Robotics has two open tickets: her monthly CSV export has been empty since Monday, written yesterday, and her invoice shows the wrong billing address, written three hours ago. The agent must tell her on the CSV ticket that the fix ships on Thursday. No real Zendesk account or customer is involved.
 
-Requires Node.js 24 and @ancha-labs/cli 0.4.3. The agent uses Node's built-in fetch, no model and no Zendesk token.
+Requires Node.js 24 and @ancha-labs/cli 0.4.5. The agent uses Node's built-in fetch, no model and no Zendesk token.
 
 In this directory:
 

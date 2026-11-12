@@ -2,7 +2,7 @@
 
 Fictional, normalized trace records. No real incident or customer data.
 
-Requires Node.js 24 and @ancha-labs/cli 0.4.3. The bot uses Node's built-in fetch, no model and no Slack account.
+Requires Node.js 24 and @ancha-labs/cli 0.4.5. The bot uses Node's built-in fetch, no model and no Slack account.
 
 In this directory:
 

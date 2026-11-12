@@ -1,11 +1,11 @@
 {
-  "cli_version": "0.4.3",
+  "cli_version": "0.4.5",
   "node_version": "24.22.2",
-  "verified_on": "2026-11-10",
+  "verified_on": "2026-11-12",
   "model": null,
   "scope": "Fictional deterministic duplicate-bug fixture; no Zendesk or Atlassian account, issues or model calls.",
   "scene_sha256": "3cbe15c84bae0bd8bd79775649f332e2eac2e3e2b8590875c0382eae36f2fecd",
-  "input_digest": "dd2db0f8109c46e4b584e5c0d0de4d957bc2217cbacb3e5018fc28c537e5419c",
+  "input_digest": "c16b048a55f32132dc2b5cd44e702778d3f521e3503573c69dfd6acb3a0786f0",
   "trials": [
     {
       "version": "original",

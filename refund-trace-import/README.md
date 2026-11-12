@@ -2,7 +2,7 @@
 
 A fictional refund agent's production trace, as OTLP JSON. Customer cus_4821 asked for a refund on order A-1002, which belongs to customer cus_7310, and the agent refunded it. No real order, customer or payment is involved.
 
-Requires Node.js 24 and @ancha-labs/cli 0.4.3. The agent is a script with no model, and the test needs no model key.
+Requires Node.js 24 and @ancha-labs/cli 0.4.5. The agent is a script with no model, and the test needs no model key.
 
 In this directory:
 
